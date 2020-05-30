@@ -5,10 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>App</title>
-    <link rel="shortcut icon" href="https://img.icons8.com/nolan/64/weixing.png"/>
-    
+    <meta name="description" content="This is A App For Chatting With Noone" />
+    <meta name="robots" content="index,nofollow" />
+    <link rel="shortcut icon" href="https://img.icons8.com/dotty/80/000000/telegram-app.png" />
 
-    
+
+
 </head>
 
 <body>
@@ -16,13 +18,12 @@
     <button class="btn">+1</button>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io()
-        socket.on('countUpdate', (count) => {
-            console.log(count)
-        })
-        document.querySelector('.btn').addEventListener('click', () => {
-            socket.emit('clicked')
-        })
+      var socket = io();
+      socket.on('newUser',data=>{
+         document.body.innerHTML = '';
+         document.write(data.description);
+      });
+   </script>
 
     </script>
 </body>
