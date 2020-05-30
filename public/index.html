@@ -15,13 +15,12 @@
 
 <body>
     Chat App
-    <button class="btn">+1</button>
+    <div class="message"></div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       var socket = io();
       socket.on('newUser',data=>{
-         document.body.innerHTML = '';
-         document.write(data.description);
+        document.querySelector('.message').textContent=data.description
       });
    </script>
 
