@@ -10,14 +10,14 @@ res.sendFile(container+'/index.html')
 let clients = 0;
 io.on('connection', (socket)=>{
    clients++;
-   io.emit('broadcast',{ description: clients + ' clients connected!'});
+   io.emit('newUser',{ description: clients + ' clients connected!'});
    socket.on('disconnect',  ()=>{
       clients--;
-      io.emit('broadcast',{ description: clients + ' clients connected!'});
+      io.emit('newUser',{ description: clients + ' clients connected!'});
    });
 });
 
-http.listen(3000, function() {
+io.listen(3000, function() {
    console.log('listening on localhost:3000');
 });
 
