@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    Chat App
+    <button class="btn">+1</button>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io()
+        socket.on('countUpdate', (count) => {
+            console.log(count)
+        })
+        document.querySelector('.btn').addEventListener('click', () => {
+            socket.emit('clicked')
+        })
+
+    </script>
+</body>
+
+</html>
