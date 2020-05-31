@@ -1,26 +1,35 @@
-const app = require('express')();
-const server = require('http').createServer(app)
-const io = require('socket.io')(server);
+const express = require('express');
+const http =require('http')
+const app = express();
+const port = process.env.PORT || 3000
 const path = require('path');
-const container =path.join(__dirname,'../public') ;
-const port = process.env.PORT || 4000;
-app.get('/',(req,res)=>{
-res.sendFile(container+'/index.html')
+const server = http.createServer(app)
+const dir = path.join(__dirname,'../public')
+const socketio=require('socket.io')
+const io = socketio(server);
+const fwords=require('bad-words')
+app.use(express.static(dir))
+io.on('connection',(socket)=>{
+    socket.emit('message',"Welcome my Friend!!")
+    socket.broadcast.emit('message',"A new User Came into Chat")
+    socket.on('sendMsg',(msg,callback)=>{
+        const filter = new fwords()
+        if(filter.isProfane(msg)){
+            return callback('Don\'t use that word')
+        }
+        callback()
+    })
+    socket.on('disconnect',()=>{
+       io.emit('message',"Users Has Left")
+    })
+    socket.on('location',(location,callback)=>{
+        io.emit('loc',`https://www.google.com/maps/@${location.latitude},${location.longitude}`)
+        callback(' Server got it');
+    })
+    
+    
 })
-let clients = 0;
-io.on('connection', (socket)=>{
-   clients++;
-   io.emit('newUser',{ description: clients + ' clients connected!'});
-   socket.on('disconnect',  ()=>{
-      clients--;
-      io.emit('newUser',{ description: clients + ' clients connected!'});
-   });
-});
-
-io.listen(3000, function() {
-   console.log('listening on localhost:3000');
-});
 
 server.listen(port,()=>{
-    console.log("Server Running on port "+port)
+    console.log('APP RUNNING ON PORT: '+port)
 })
