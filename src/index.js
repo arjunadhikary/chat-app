@@ -13,6 +13,7 @@ io.on('connection',(socket)=>{
     socket.emit('message',"Welcome my Friend!!")
     socket.broadcast.emit('message',"A new User Came into Chat")
     socket.on('sendMsg',(msg,callback)=>{
+        io.emit('message',msg)
         const filter = new fwords()
         if(filter.isProfane(msg)){
             return callback('Don\'t use that word')
@@ -23,7 +24,7 @@ io.on('connection',(socket)=>{
        io.emit('message',"Users Has Left")
     })
     socket.on('location',(location,callback)=>{
-        io.emit('loc',`https://www.google.com/maps/@${location.latitude},${location.longitude}`)
+        io.emit('message',`https://www.google.com/maps/@${location.latitude},${location.longitude}`)
         callback(' Server got it');
     })
     
