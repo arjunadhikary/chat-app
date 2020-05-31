@@ -1,4 +1,4 @@
-#Chat-app
+# Chat-app
 ## Real-time Chat application using Node.js, Express and Socket.io!
 
 ### Link to heroku: https://kurakatnay.herokuapp.com/
