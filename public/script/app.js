@@ -4,14 +4,20 @@ $selectBtn = $selectForm.querySelector('button');
 $selectInput = $selectForm.querySelector('input');
 $selectLoc = document.querySelector('#getlocation');
 $selectMsg = document.querySelector('#message');
+const locTemp =document.querySelector('#loc-msg').innerHTML
 const htmlTemp = document.querySelector('#msg-temp').innerHTML
 
 socket.on('message', (msg) => {
-    console.log(msg)
     const html = Mustache.render(htmlTemp,{
         message:msg
     });
     $selectMsg.insertAdjacentHTML('beforeend',html)
+})
+socket.on('locMsg',(location)=>{
+  const lochtml= Mustache.render(locTemp,{
+        locdata:location
+    })
+    $selectMsg.insertAdjacentHTML('beforeend',lochtml)
 })
 
 $selectForm.addEventListener('submit', (e) => {
@@ -35,7 +41,7 @@ $selectLoc.addEventListener('click', (e) => {
         console.log('Geolocation Not Supported!!!')
     }
     navigator.geolocation.getCurrentPosition(position => {
-        socket.emit('location', {
+        socket.emit('locMsg', {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
         }, (data) => {

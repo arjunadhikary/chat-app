@@ -23,8 +23,8 @@ io.on('connection',(socket)=>{
     socket.on('disconnect',()=>{
        io.emit('message',"Users Has Left")
     })
-    socket.on('location',(location,callback)=>{
-        io.emit('message',`https://www.google.com/maps/@${location.latitude},${location.longitude}`)
+    socket.on('locMsg',(location,callback)=>{
+        io.emit('locMsg',`https://www.google.com/maps/@${location.latitude},${location.longitude}`)
         callback(' Server got it');
     })
     
