@@ -1,38 +1,22 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-  <meta charset="utf-8">
-  <title>Chat App</title>
-</head>
-
-<body>
-  <div id='message'></div>
-  <form>
-    <input type="text" name="message">
-    <button>Send</button>
-  </form>
-  <br>
-  <button id='getlocation'>Share Location</button>
-  
-
-
-
-  <script id="msg-temp" type="text/html">
-      <div>
-        <p>{{message}}</p>
-      </div>  
-  </script>
-  <script id='loc-msg'src="text/html">
-  <div>
-    <p><a href='{{locdata}}' target="_blank">My Location</a></p>
-    </div>
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.6.0/qs.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src='./script/app.js'></script>
-
-</body>
+    <head>
+        <title>Chat App</title>
+        <link rel="icon" href="/img/favicon.png">
+        <link rel="stylesheet" href="/css/styles.css">
+    </head>
+    <body>
+        <div class="centered-form">
+            <div class="centered-form__box">
+                <h1>Join</h1>
+                <form action="/chat.html">
+                    <label>Display name</label>
+                    <input type="text" name="username" placeholder="Display name" required>
+                    <label>Room</label>
+                    <input type="text" name="room" placeholder="Room" required>
+                    <button>Join</button>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

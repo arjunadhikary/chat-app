@@ -1,57 +1,66 @@
-const socket = io();
-$selectForm = document.querySelector('form');
-$selectBtn = $selectForm.querySelector('button');
-$selectInput = $selectForm.querySelector('input');
-$selectLoc = document.querySelector('#getlocation');
-$selectMsg = document.querySelector('#message');
-const locTemp =document.querySelector('#loc-msg').innerHTML
-const htmlTemp = document.querySelector('#msg-temp').innerHTML
+const socket = io()
 
-socket.on('message', (msg) => {
-    const html = Mustache.render(htmlTemp,{
-        message:msg
-    });
-    $selectMsg.insertAdjacentHTML('beforeend',html)
-})
-socket.on('locMsg',(location)=>{
-  const lochtml= Mustache.render(locTemp,{
-        locdata:location
+const $messageForm = document.querySelector('#message-form')
+const $messageFormInput = $messageForm.querySelector('input')
+const $messageFormButton = $messageForm.querySelector('button')
+const $sendLocationButton = document.querySelector('#send-location')
+const $messages = document.querySelector('#messages')
+
+const messageTemplate = document.querySelector('#message-template').innerHTML
+const locationMessageTemplate = document.querySelector('#location-message-template').innerHTML
+
+socket.on('message', (message) => {
+    console.log(message)
+    const html = Mustache.render(messageTemplate, {
+        message: message.message,
+        createdAt: moment(message.createdAt).format('h:mm a')
     })
-    $selectMsg.insertAdjacentHTML('beforeend',lochtml)
+    $messages.insertAdjacentHTML('beforeend', html)
 })
 
-$selectForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    $selectBtn.setAttribute('disabled', 'disabled')
-    let msg = e.target.elements.message.value
-    socket.emit('sendMsg', msg, (error) => {
-        $selectBtn.removeAttribute('disabled')
-        $selectInput.value = ""
-        $selectInput.focus()
+socket.on('locationMessage', (message) => {
+    console.log(message)
+    const html = Mustache.render(locationMessageTemplate, {
+        url: message.url,
+        createdAt: moment(message.createdAt).format('h:mm a')
+    })
+    $messages.insertAdjacentHTML('beforeend', html)
+})
+
+$messageForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+
+    $messageFormButton.setAttribute('disabled', 'disabled')
+
+    const message = e.target.elements.message.value
+
+    socket.emit('sendMessage', message, (error) => {
+        $messageFormButton.removeAttribute('disabled')
+        $messageFormInput.value = ""
+        $messageFormInput.focus()
+
         if (error) {
             return console.log(error)
         }
-        console.log('Delevered')
+
+        console.log('Message delivered!')
     })
 })
-$selectLoc.addEventListener('click', (e) => {
-    e.preventDefault();
-    $selectLoc.setAttribute('disabled', 'Sharing')
+
+$sendLocationButton.addEventListener('click', () => {
     if (!navigator.geolocation) {
-        console.log('Geolocation Not Supported!!!')
+        return alert('Geolocation is not supported by your browser.')
     }
-    navigator.geolocation.getCurrentPosition(position => {
-        socket.emit('locMsg', {
+
+    $sendLocationButton.setAttribute('disabled', 'disabled')
+
+    navigator.geolocation.getCurrentPosition((position) => {
+        socket.emit('sendLocation', {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
-        }, (data) => {
-            console.log('Location Shared With Server' + data);
-            $selectLoc.removeAttribute('disabled')
-
+        }, () => {
+            $sendLocationButton.removeAttribute('disabled')
+            console.log('Location shared!')  
         })
     })
 })
-socket.on('loc', (link) => {
-    console.log(link)
-})
-
