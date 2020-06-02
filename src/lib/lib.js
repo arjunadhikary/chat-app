@@ -1,13 +1,15 @@
-const getMsg =(message)=>{
+const getMsg =(username,message)=>{
     return {
         message,
-        createdAt:new Date().getTime()
+        createdAt:new Date().getTime(),
+        username
     }
 }
-const getUrl =(url)=>{
+const getUrl =(username,url)=>{
     return {
         url,
-        createdAt:new Date().getTime()
+        createdAt:new Date().getTime(),
+        username
     }
 }
 module.exports ={
