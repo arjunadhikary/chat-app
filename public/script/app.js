@@ -8,21 +8,24 @@ const $messages = document.querySelector('#messages')
 
 const messageTemplate = document.querySelector('#message-template').innerHTML
 const locationMessageTemplate = document.querySelector('#location-message-template').innerHTML
+const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML
 
 socket.on('message', (message) => {
     console.log(message)
     const html = Mustache.render(messageTemplate, {
         message: message.message,
-        createdAt: moment(message.createdAt).format('h:mm a')
+        createdAt: moment(message.createdAt).format('h:mm a'),
+        username:message.username
     })
     $messages.insertAdjacentHTML('beforeend', html)
 })
 
 socket.on('locationMessage', (message) => {
-    console.log(message)
     const html = Mustache.render(locationMessageTemplate, {
         url: message.url,
-        createdAt: moment(message.createdAt).format('h:mm a')
+        createdAt: moment(message.createdAt).format('h:mm a'),
+        username:message.username
+
     })
     $messages.insertAdjacentHTML('beforeend', html)
 })
@@ -42,8 +45,6 @@ $messageForm.addEventListener('submit', (e) => {
         if (error) {
             return console.log(error)
         }
-
-        console.log('Message delivered!')
     })
 })
 
@@ -63,4 +64,26 @@ $sendLocationButton.addEventListener('click', () => {
             console.log('Location shared!')  
         })
     })
+})
+function parseQuery(queryString) {
+    var query = {};
+    var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+    for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i].split('=');
+        query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+    }
+    return query;
+}
+const {username,room} = parseQuery(window.location.search)
+socket.emit('join',{username,room}, (error)=>{
+if(error){
+     alert(error)
+     location.href = '/'
+}
+
+})
+socket.on('activeStats',({users,room})=>{
+    const html =Mustache.render(sidebarTemplate,{users,room})
+    document.querySelector('#sidebar').innerHTML= html
+
 })

@@ -3,7 +3,8 @@ const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
 const Filter = require('bad-words')
-const { getMsg, getUrl } = require('./lib/lib')
+const { getMsg, getUrl } = require('./lib/lib');
+const { storeUsers, removeUser, findBy, findall } = require('./lib/users')
 
 const app = express()
 const server = http.createServer(app)
@@ -15,29 +16,54 @@ const publicDirectoryPath = path.join(__dirname, '../public')
 app.use(express.static(publicDirectoryPath))
 
 io.on('connection', (socket) => {
-    console.log('New  connection')
+    socket.on('join', (data, callback) => {
+        const { user, error } = storeUsers({ id: socket.id, ...data })
+        if (error) {
+            return callback(error);
+        }
+        
 
-    socket.emit('message', getMsg('Welcome!'))
-    socket.broadcast.emit('message', getMsg('A new user has joined!'))
+        socket.join(user.room)
+        socket.emit('message', getMsg(`${user.username} has joined`))
+        socket.broadcast.to(user.room).emit('message', getMsg(`${user.username} has joined!`));
+        io.to(user.id).emit('activeStats',{
+            room:user.room,
+            users:findall(user.room)
+        })
+        callback()
+
+    })
 
     socket.on('sendMessage', (message, callback) => {
+        const user = findBy(socket.id)
         const filter = new Filter()
-
         if (filter.isProfane(message)) {
-            return callback('Don\t use that word!')
+            return callback('Don\'t use that word!')
         }
 
-        io.emit('message', getMsg(message))
+        io.to(user.room).emit('message', getMsg(user.username, message))
         callback()
     })
 
     socket.on('sendLocation', (coords, callback) => {
-        io.emit('locationMessage', getUrl(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
+        const user = findBy(socket.id)
+        io.to(user.room).emit('locationMessage', getUrl(user.username, `https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
         callback()
     })
 
     socket.on('disconnect', () => {
-        io.emit('message', getMsg('A user has left!'))
+        const removed = removeUser(socket.id);
+        if (removed) {
+            io.to(removed.room).emit('message', getMsg(`${removed.username} has left`));
+            io.to(removed.room).emit('activeStats', {
+                room:removed.room,
+                users:findall(removed.room)
+               
+
+            })
+        }
+      
+
     })
 })
 
