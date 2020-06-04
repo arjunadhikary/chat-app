@@ -83,7 +83,11 @@ if(error){
 
 })
 socket.on('activeStats',({users,room})=>{
-    const html =Mustache.render(sidebarTemplate,{users,room})
-    document.querySelector('#sidebar').innerHTML= html
+    const html =Mustache.render(sidebarTemplate,{
+        users:users,
+        room:room
+    })
+    console.log(users)
+    document.querySelector('#sidebar_chat').innerHTML= html
 
 })

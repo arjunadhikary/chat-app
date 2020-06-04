@@ -24,9 +24,9 @@ io.on('connection', (socket) => {
         
 
         socket.join(user.room)
-        socket.emit('message', getMsg(`${user.username} has joined`))
+        socket.emit('message', getMsg(`Welcome ${user.username}`))
         socket.broadcast.to(user.room).emit('message', getMsg(`${user.username} has joined!`));
-        io.to(user.id).emit('activeStats',{
+        io.to(user.room).emit('activeStats',{
             room:user.room,
             users:findall(user.room)
         })
@@ -35,13 +35,14 @@ io.on('connection', (socket) => {
     })
 
     socket.on('sendMessage', (message, callback) => {
-        const user = findBy(socket.id)
+        console.log(socket.id)
+        const msgUser = findBy(socket.id)
         const filter = new Filter()
         if (filter.isProfane(message)) {
             return callback('Don\'t use that word!')
         }
 
-        io.to(user.room).emit('message', getMsg(user.username, message))
+        io.to(msgUser.room).emit('message', getMsg(msgUser.username, message))
         callback()
     })
 
