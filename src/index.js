@@ -35,7 +35,6 @@ io.on('connection', (socket) => {
     })
 
     socket.on('sendMessage', (message, callback) => {
-        console.log(socket.id)
         const msgUser = findBy(socket.id)
         const filter = new Filter()
         if (filter.isProfane(message)) {
